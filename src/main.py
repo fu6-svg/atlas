@@ -15,6 +15,10 @@ from robot_status import (
     show_robot_status,
     update_robot_status,
 )
+from robot_runtime import (
+    reset_robot_after_emergency,
+    run_robot_runtime,
+)
 from sensor_simulator import (
     run_sensor_simulation,
     simulate_sensor_update,
@@ -40,7 +44,9 @@ def print_menu():
     print("7.Run Sensor Simulation")
     print("8.Show Recent Sensor Logs")
     print("9.Clear Sensor Logs")
-    print("10.Exit")
+    print("10.Run Robot Runtime")
+    print("11.Reset Robot After Emergency")
+    print("12.Exit")
 
 
 def get_integer_in_range(message, minimum_value, maximum_value):
@@ -103,6 +109,29 @@ def handle_clear_logs():
         print("Clear sensor logs canceled.")
 
 
+def handle_robot_runtime():
+    """Ask for runtime settings and run the robot runtime."""
+    number_of_cycles = get_integer_in_range(
+        "Runtime cycles (1-50): ",
+        1,
+        50
+    )
+    delay_seconds = get_number_in_range("Delay seconds (0-5): ", 0, 5)
+    run_robot_runtime(robot_status, number_of_cycles, delay_seconds)
+
+
+def handle_emergency_reset():
+    """Ask for confirmation before resetting after emergency."""
+    confirmation = input("Type RESET to reset robot: ")
+
+    # RESET 输入大小写都可以接受，strip 用来去掉前后空格
+    if confirmation.strip().upper() == "RESET":
+        reset_robot_after_emergency(robot_status)
+        print("Robot reset after emergency.")
+    else:
+        print("Emergency reset canceled.")
+
+
 def run_dashboard():
     """Run the Atlas Robot Dashboard main menu."""
     print_title()
@@ -131,6 +160,10 @@ def run_dashboard():
         elif user_choice == "9":
             handle_clear_logs()
         elif user_choice == "10":
+            handle_robot_runtime()
+        elif user_choice == "11":
+            handle_emergency_reset()
+        elif user_choice == "12":
             break
         else:
             print("Invalid option. Please try again.")
