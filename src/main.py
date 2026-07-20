@@ -7,6 +7,11 @@ from data_logger import (
     log_robot_status,
     show_recent_log_entries,
 )
+from event_logger import (
+    DEFAULT_EVENT_LOG_PATH,
+    clear_runtime_events,
+    show_recent_runtime_events,
+)
 from health_monitor import show_health_report
 from input_utils import get_number_in_range
 from robot_status import (
@@ -46,7 +51,9 @@ def print_menu():
     print("9.Clear Sensor Logs")
     print("10.Run Robot Runtime")
     print("11.Reset Robot After Emergency")
-    print("12.Exit")
+    print("12.Show Recent Runtime Events")
+    print("13.Clear Runtime Events")
+    print("14.Exit")
 
 
 def get_integer_in_range(message, minimum_value, maximum_value):
@@ -132,6 +139,28 @@ def handle_emergency_reset():
         print("Emergency reset canceled.")
 
 
+def handle_recent_runtime_events():
+    """Ask how many recent runtime events to display."""
+    number_of_entries = get_integer_in_range(
+        "Recent runtime events (1-50): ",
+        1,
+        50
+    )
+    show_recent_runtime_events(DEFAULT_EVENT_LOG_PATH, number_of_entries)
+
+
+def handle_clear_runtime_events():
+    """Ask for confirmation before clearing runtime events."""
+    confirmation = input("Type YES to clear runtime events: ")
+
+    # 清空运行事件日志前，要求用户明确确认
+    if confirmation.strip().upper() == "YES":
+        clear_runtime_events(DEFAULT_EVENT_LOG_PATH)
+        print("Runtime events cleared.")
+    else:
+        print("Clear runtime events canceled.")
+
+
 def run_dashboard():
     """Run the Atlas Robot Dashboard main menu."""
     print_title()
@@ -164,6 +193,10 @@ def run_dashboard():
         elif user_choice == "11":
             handle_emergency_reset()
         elif user_choice == "12":
+            handle_recent_runtime_events()
+        elif user_choice == "13":
+            handle_clear_runtime_events()
+        elif user_choice == "14":
             break
         else:
             print("Invalid option. Please try again.")
